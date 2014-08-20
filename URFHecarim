@@ -1,4 +1,4 @@
-local Hecarim_Ver = "0.002"
+local Hecarim_Ver = "0.001"
 
 if myHero.charName ~= "Hecarim" then return end
 
@@ -49,17 +49,17 @@ local UPDATE_FILE_PATH = SCRIPT_PATH..UPDATE_NAME..".lua"
 local UPDATE_URL = "https://"..UPDATE_HOST..UPDATE_PATH
 
 function AutoupdaterMsg(msg) print("<font color=\"#FF0000\">"..UPDATE_NAME..":</font> <font color=\"#FFFFFF\">"..msg..".</font>") end
-if _G.Vlad_Autoupdate then
+if _G.Hecarim_Autoupdate then
 	local ServerData = GetWebResult(UPDATE_HOST, UPDATE_PATH)
 	if ServerData then
-		local ServerVersion = string.match(ServerData, "local Vlad_Ver = \"%d+.%d+\"")
+		local ServerVersion = string.match(ServerData, "local Hecarim_Ver = \"%d+.%d+\"")
 		ServerVersion = string.match(ServerVersion and ServerVersion or "", "%d+.%d+")
 		if ServerVersion then
 			ServerVersion = tonumber(ServerVersion)
-			if tonumber(Vlad_Ver) < ServerVersion then
+			if tonumber(Hecarim_Ver) < ServerVersion then
 				AutoupdaterMsg("New version available"..ServerVersion)
 				AutoupdaterMsg("Updating, please don't press F9")
-				DownloadFile(UPDATE_URL, UPDATE_FILE_PATH, function () AutoupdaterMsg("Successfully updated. ("..Vlad_Ver.." => "..ServerVersion.."), press F9 twice to load the updated version.") end)	 
+				DownloadFile(UPDATE_URL, UPDATE_FILE_PATH, function () AutoupdaterMsg("Successfully updated. ("..Hecarim_Ver.." => "..ServerVersion.."), press F9 twice to load the updated version.") end)	 
 			else
 				AutoupdaterMsg("You have got the latest version ("..ServerVersion..")")
 			end
