@@ -1,4 +1,4 @@
-local Hecarim_Ver = "0.001"
+local Hecarim_Ver = "0.002"
 
 if myHero.charName ~= "Hecarim" then return end
 
