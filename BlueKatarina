@@ -1,4 +1,4 @@
-local Katarina_Ver = "0.005"
+local Katarina_Ver = "0.007"
 
 if myHero.charName ~= "Katarina" then return end
 
@@ -91,6 +91,11 @@ function KatarinaMenu()
 	KatarinaMenu:addSubMenu("ComboExtra", "ComboExtra")
 		KatarinaMenu.ComboExtra:addParam("Packets", "Use Packets (soon)", SCRIPT_PARAM_ONOFF, true)
 		KatarinaMenu.ComboExtra:addParam("CastWAuto", "Cast W Auto", SCRIPT_PARAM_ONOFF, true)
+	KatarinaMenu:addSubMenu("Drawrange", "DrawRange")
+		KatarinaMenu.Drawrange:addParam("RangeQ", "Range Q", SCRIPT_PARAM_ONOFF, true)
+		KatarinaMenu.Drawrange:addParam("RangeW", "Range W", SCRIPT_PARAM_ONOFF, true)
+		KatarinaMenu.Drawrange:addParam("RangeE", "Range E", SCRIPT_PARAM_ONOFF, true)
+		KatarinaMenu.Drawrange:addParam("RangeR", "Range R", SCRIPT_PARAM_ONOFF, true)
 end
 
 function ComboFast()
@@ -127,3 +132,16 @@ function CastR()
             CastSpell(_R)
         end
 	end
+function OnDraw()
+   if KatarinaMenu.Drawrange.RangeQ then
+         DrawCircle2(myHero.x, myHero.y, myHero.z, 675, 0xFFFF00FF)
+	 if KatarinaMenu.Drawrange.RangeW then
+         DrawCircle2(myHero.x, myHero.y, myHero.z, 375, 0xFFFF00FF)
+		  if KatarinaMenu.Drawrange.RangeE then
+         DrawCircle2(myHero.x, myHero.y, myHero.z, 700, 0xFFFF00FF)
+			if KatarinaMenu.Drawrange.RangeR then
+         DrawCircle2(myHero.x, myHero.y, myHero.z, 550, 0xFFFF00FF)
+	
+		end
+	end
+end
