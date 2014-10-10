@@ -1,4 +1,4 @@
-local Katarina_Ver = "0.007"
+local Katarina_Ver = "0.008"
 
 if myHero.charName ~= "Katarina" then return end
 
@@ -80,7 +80,9 @@ end
 function OnTick()
 	ComboFast()
 	ts:update()
+	UseItems(unit)
 	CastWAuto()
+	loading()
 end
 
 function KatarinaMenu()
@@ -100,6 +102,7 @@ end
 
 function ComboFast()
 	if KatarinaMenu.Combo.ComboFast then
+	UseItems(unit)
 		CastQ()
 		CastE()
 		CastW()
@@ -135,15 +138,73 @@ function CastR()
 function OnDraw()
    if KatarinaMenu.Drawrange.RangeQ then
          DrawCircle(myHero.x, myHero.y, myHero.z, 675, 0xFFFF00FF)
+		 end
 	 if KatarinaMenu.Drawrange.RangeW then
          DrawCircle(myHero.x, myHero.y, myHero.z, 375, 0xFFFF00FF)
+		 end
 		  if KatarinaMenu.Drawrange.RangeE then
          DrawCircle(myHero.x, myHero.y, myHero.z, 700, 0xFFFF00FF)
+		 end
 			if KatarinaMenu.Drawrange.RangeR then
          DrawCircle(myHero.x, myHero.y, myHero.z, 550, 0xFFFF00FF)
 	
 		end
+end
+
+function loading()
+
+	Items = {
+		BRK = { id = 3153, range = 450, reqTarget = true, slot = nil },
+		BWC = { id = 3144, range = 400, reqTarget = true, slot = nil },
+		DFG = { id = 3128, range = 750, reqTarget = true, slot = nil },
+		HGB = { id = 3146, range = 400, reqTarget = true, slot = nil },
+		RSH = { id = 3074, range = 350, reqTarget = false, slot = nil },
+		STD = { id = 3131, range = 350, reqTarget = false, slot = nil },
+		TMT = { id = 3077, range = 350, reqTarget = false, slot = nil },
+		YGB = { id = 3142, range = 350, reqTarget = false, slot = nil },
+		BFT = { id = 3188, range = 750, reqTarget = true, slot = nil },
+		RND = { id = 3143, range = 275, reqTarget = false, slot = nil }
+	}
+end
+
+function OnSendPacket(p)
+if castingUlt then
+	packet = Packet(p)
+	if packet:get('sourceNetworkId') == myHero.networkID then
+		packetName = packet:get('name')
+                if packetName == 'S_MOVE' then
+			packet:block()
+		elseif packetName == 'S_CAST' then
+			packet:block()
+		end
+	end
 	end
 end
+
+function OnGainBuff(unit, buff)
+	if unit.isMe and buff.name == "katarinarsound" then
+		castingUlt = true
+	end
 end
+function OnLoseBuff(unit, buff)
+	if unit.isMe and buff.name == "katarinarsound" then
+		castingUlt = false
+	end
+end
+
+function UseItems(unit)
+	if unit ~= nil then
+		for _, item in pairs(Items) do
+			item.slot = GetInventorySlotItem(item.id)
+			if item.slot ~= nil then
+				if item.reqTarget and GetDistance(unit) < item.range then
+					CastSpell(item.slot, unit)
+				elseif not item.reqTarget then
+					if (GetDistance(unit) - getHitBoxRadius(myHero) - getHitBoxRadius(unit)) < 50 then
+						CastSpell(item.slot)
+					end
+				end
+			end
+		end
+	end
 end
