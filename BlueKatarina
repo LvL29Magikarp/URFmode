@@ -1,4 +1,4 @@
-local Katarina_Ver = "0.004"
+local Katarina_Ver = "0.005"
 
 if myHero.charName ~= "Katarina" then return end
 
@@ -79,19 +79,15 @@ end
 
 function OnTick()
 	ComboFast()
-	ComboLong()
 	ts:update()
 	CastWAuto()
-	SOW:DisableAttacks()
-    if not ultiCasting then SOW:EnableAttacks() end
 end
 
 function KatarinaMenu()
 	KatarinaMenu = scriptConfig("BlueKatarina", "Katarina")
 	
 	KatarinaMenu:addSubMenu("Combo", "Combo")
-		KatarinaMenu.Combo:addParam("ComboFast", "Fast Combo (E+W+R)", SCRIPT_PARAM_ONKEYDOWN, false, 32)
-		KatarinaMenu.Combo:addParam("ComboLong", "Long Combo (Q+E+W+R)", SCRIPT_PARAM_ONKEYDOWN, false, 84)
+		KatarinaMenu.Combo:addParam("ComboFast", "Fast Combo", SCRIPT_PARAM_ONKEYDOWN, false, 32)
 	KatarinaMenu:addSubMenu("ComboExtra", "ComboExtra")
 		KatarinaMenu.ComboExtra:addParam("Packets", "Use Packets (soon)", SCRIPT_PARAM_ONOFF, true)
 		KatarinaMenu.ComboExtra:addParam("CastWAuto", "Cast W Auto", SCRIPT_PARAM_ONOFF, true)
@@ -99,14 +95,6 @@ end
 
 function ComboFast()
 	if KatarinaMenu.Combo.ComboFast then
-		CastE()
-		CastW()
-		CastR()
-	end
-end
-
-function ComboLong()
-	if KatarinaMenu.Combo.ComboLong then
 		CastQ()
 		CastE()
 		CastW()
@@ -139,25 +127,3 @@ function CastR()
             CastSpell(_R)
         end
 	end
-
-function OnLoseBuff(unit, buff)
-	if unit.isMe and buff.name:lower():find("katarinarsound") then
-		ultiCasting = false
-	end
-end
-
-function OnGainBuff(unit, buff)
-    if unit.isMe and buff.name:lower():find("katarinarsound") then
-        ultiCasting = true
-    end
-end
-
-function OnProcessSpell(object,spell)
-	--->
-		if object == myHero then
-			if spell.name:lower():find("katarinar") then
-				ultiCasting = true
-			end
-		end
-	---<
-end
