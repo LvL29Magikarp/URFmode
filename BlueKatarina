@@ -1,0 +1,130 @@
+local Katarina_Ver = "0.001"
+
+if myHero.charName ~= "Katarina" then return end
+
+HWID = Base64Encode(tostring(os.getenv("PROCESSOR_IDENTIFIER")..os.getenv("USERNAME")..os.getenv("COMPUTERNAME")..os.getenv("PROCESSOR_LEVEL")..os.getenv("PROCESSOR_REVISION")))
+id = 237
+ScriptName = "BlueKatarina"
+assert(load(Base64Decode("G0x1YVIAAQQEBAgAGZMNChoKAAAAAAAAAAAAAQIDAAAAJQAAAAgAAIAfAIAAAQAAAAQKAAAAVXBkYXRlV2ViAAEAAAACAAAADAAAAAQAETUAAAAGAUAAQUEAAB2BAAFGgUAAh8FAAp0BgABdgQAAjAHBAgFCAQBBggEAnUEAAhsAAAAXwAOAjMHBAgECAgBAAgABgUICAMACgAEBgwIARsNCAEcDwwaAA4AAwUMDAAGEAwBdgwACgcMDABaCAwSdQYABF4ADgIzBwQIBAgQAQAIAAYFCAgDAAoABAYMCAEbDQgBHA8MGgAOAAMFDAwABhAMAXYMAAoHDAwAWggMEnUGAAYwBxQIBQgUAnQGBAQgAgokIwAGJCICBiIyBxQKdQQABHwCAABcAAAAECAAAAHJlcXVpcmUABAcAAABzb2NrZXQABAcAAABhc3NlcnQABAQAAAB0Y3AABAgAAABjb25uZWN0AAQQAAAAYm9sLXRyYWNrZXIuY29tAAMAAAAAAABUQAQFAAAAc2VuZAAEGAAAAEdFVCAvcmVzdC9uZXdwbGF5ZXI/aWQ9AAQHAAAAJmh3aWQ9AAQNAAAAJnNjcmlwdE5hbWU9AAQHAAAAc3RyaW5nAAQFAAAAZ3N1YgAEDQAAAFteMC05QS1aYS16XQAEAQAAAAAEJQAAACBIVFRQLzEuMA0KSG9zdDogYm9sLXRyYWNrZXIuY29tDQoNCgAEGwAAAEdFVCAvcmVzdC9kZWxldGVwbGF5ZXI/aWQ9AAQCAAAAcwAEBwAAAHN0YXR1cwAECAAAAHBhcnRpYWwABAgAAAByZWNlaXZlAAQDAAAAKmEABAYAAABjbG9zZQAAAAAAAQAAAAAAEAAAAEBvYmZ1c2NhdGVkLmx1YQA1AAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAMAAAADAAAAAwAAAAMAAAAEAAAABAAAAAUAAAAFAAAABQAAAAYAAAAGAAAABwAAAAcAAAAHAAAABwAAAAcAAAAHAAAABwAAAAgAAAAHAAAABQAAAAgAAAAJAAAACQAAAAkAAAAKAAAACgAAAAsAAAALAAAACwAAAAsAAAALAAAACwAAAAsAAAAMAAAACwAAAAkAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAGAAAAAgAAAGEAAAAAADUAAAACAAAAYgAAAAAANQAAAAIAAABjAAAAAAA1AAAAAgAAAGQAAAAAADUAAAADAAAAX2EAAwAAADUAAAADAAAAYWEABwAAADUAAAABAAAABQAAAF9FTlYAAQAAAAEAEAAAAEBvYmZ1c2NhdGVkLmx1YQADAAAADAAAAAIAAAAMAAAAAAAAAAEAAAAFAAAAX0VOVgA="), nil, "bt", _ENV))()
+
+local REQUIRED_LIBS = {
+["SOW"] = "https://raw.githubusercontent.com/honda7/BoL/master/Common/SOW.lua",
+["VPrediction"] = "https://raw.githubusercontent.com/honda7/BoL/master/Common/VPrediction.lua"
+}
+
+local DOWNLOADING_LIBS, DOWNLOAD_COUNT = false, 0
+
+function AfterDownload()
+	DOWNLOAD_COUNT = DOWNLOAD_COUNT - 1
+	if DOWNLOAD_COUNT == 0 then
+		DOWNLOADING_LIBS = false
+		print("<font color=\"#FF0000\"><b>BlueKatarina</b></font> <font color=\"#FFFFFF\">Required libraries downloaded successfully, please reload (double F9).</font>")
+	end
+end
+
+_G.BlueKatarina_Autoupdate = true
+
+for DOWNLOAD_LIB_NAME, DOWNLOAD_LIB_URL in pairs(REQUIRED_LIBS) do
+	if FileExist(LIB_PATH .. DOWNLOAD_LIB_NAME .. ".lua") then
+		require(DOWNLOAD_LIB_NAME)
+	else
+		DOWNLOADING_LIBS = true
+		DOWNLOAD_COUNT = DOWNLOAD_COUNT + 1
+		DownloadFile(DOWNLOAD_LIB_URL, LIB_PATH .. DOWNLOAD_LIB_NAME..".lua", AfterDownload)
+	end
+end
+
+if DOWNLOADING_LIBS then return end
+
+local UPDATE_NAME = "BlueKatarina"
+local UPDATE_HOST = "raw.github.com"
+local UPDATE_PATH = "/LvL29Magikarp/URFmode/master/BlueKatarina".."?rand="..math.random(1,10000)
+local UPDATE_FILE_PATH = SCRIPT_PATH..UPDATE_NAME..".lua"
+local UPDATE_URL = "https://"..UPDATE_HOST..UPDATE_PATH
+
+function AutoupdaterMsg(msg) print("<font color=\"#FF0000\">"..UPDATE_NAME..":</font> <font color=\"#FFFFFF\">"..msg..".</font>") end
+if _G.BlueKatarina_Autoupdate then
+	local ServerData = GetWebResult(UPDATE_HOST, UPDATE_PATH)
+	if ServerData then
+		local ServerVersion = string.match(ServerData, "local Katarina_Ver = \"%d+.%d+\"")
+		ServerVersion = string.match(ServerVersion and ServerVersion or "", "%d+.%d+")
+		if ServerVersion then
+			ServerVersion = tonumber(ServerVersion)
+			if tonumber(Katarina_Ver) < ServerVersion then
+				AutoupdaterMsg("New version available"..ServerVersion)
+				AutoupdaterMsg("Updating, please don't press F9")
+				DownloadFile(UPDATE_URL, UPDATE_FILE_PATH, function () AutoupdaterMsg("Successfully updated. ("..Katarina_Ver.." => "..ServerVersion.."), press F9 twice to load the updated version.") end)	 
+			else
+				AutoupdaterMsg("You have got the latest version ("..ServerVersion..")")
+			end
+		end
+	else
+		AutoupdaterMsg("Error downloading version info")
+	end
+end
+
+	local ts
+    ts = TargetSelector(TARGET_LOW_HP_PRIORITY,700)
+	
+--[[ END AUTOUPDATE --]]
+
+function OnLoad()
+	KatarinaMenu()
+	VP = VPrediction()
+	Orbwalker = SOW(VP)
+	KatarinaMenu:addSubMenu("Orbwalking Settings", "Orbwalking")
+	Orbwalker:LoadToMenu(KatarinaMenu.Orbwalking)
+	UpdateWeb(true, ScriptName, id, HWID)
+end
+
+function OnTick()
+	ComboFast()
+	ts:update()
+	CastWAuto()
+end
+
+function KatarinaMenu()
+	KatarinaMenu = scriptConfig("BlueKatarina", "Katarina")
+	
+	KatarinaMenu:addSubMenu("Combo", "Combo")
+		KatarinaMenu.Combo:addParam("ComboFast", "Fast Combo (E+W+R+Q) only", SCRIPT_PARAM_ONKEYDOWN, false, 32)
+	KatarinaMenu:addSubMenu("ComboExtra", "ComboExtra")
+		KatarinaMenu.ComboExtra:addParam("Packets", "Use Packets (soon)", SCRIPT_PARAM_ONOFF, true)
+		KatarinaMenu.ComboExtra:addParam("CastWAuto", "Cast W Auto", SCRIPT_PARAM_ONOFF, true)
+end
+
+function ComboFast()
+	if KatarinaMenu.Combo.ComboFast then
+		CastE()
+		CastW()
+		CastR()
+		CastQ()
+	end
+end
+
+function CastE()
+	if ts.target ~= nil and ValidTarget(ts.target, 700) and KatarinaMenu.Combo.ComboFast and (myHero:CanUseSpell(_E) == READY) then
+            CastSpell(_E, ts.target)
+        end
+	end
+function CastQ()
+	if ts.target ~= nil and ValidTarget(ts.target, 675) and KatarinaMenu.Combo.ComboFast and (myHero:CanUseSpell(_Q) == READY) then
+            CastSpell(_Q, ts.target)
+        end
+	end
+function CastW()
+	if ts.target ~= nil and ValidTarget(ts.target, 375) and KatarinaMenu.Combo.ComboFast and (myHero:CanUseSpell(_W) == READY) then
+            CastSpell(_W, ts.target)
+        end
+	end
+function CastWAuto()
+	if ts.target ~= nil and ValidTarget(ts.target, 375) and KatarinaMenu.ComboExtra.CastWAuto and (myHero:CanUseSpell(_W) == READY) then
+            CastSpell(_W, ts.target)
+        end
+	end
+function CastR()
+	if ts.target ~= nil and ValidTarget(ts.target, 550) and KatarinaMenu.Combo.ComboFast and (myHero:CanUseSpell(_R) == READY) then
+            CastSpell(_R)
+        end
+	end
+
