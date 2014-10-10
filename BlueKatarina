@@ -1,4 +1,4 @@
-local Katarina_Ver = "0.002"
+local Katarina_Ver = "0.001"
 
 if myHero.charName ~= "Katarina" then return end
 
@@ -105,7 +105,7 @@ function ComboFast()
 end
 
 function ComboLong()
-	if KatarinaMenu.Combo.ComboFast then
+	if KatarinaMenu.Combo.ComboLong then
 		CastQ()
 		CastE()
 		CastW()
