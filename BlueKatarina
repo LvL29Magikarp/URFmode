@@ -1,4 +1,4 @@
-local Katarina_Ver = "0.001"
+local Katarina_Ver = "0.003"
 
 if myHero.charName ~= "Katarina" then return end
 
