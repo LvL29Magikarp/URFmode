@@ -1,4 +1,4 @@
-local Katarina_Ver = "0.003"
+local Katarina_Ver = "0.004"
 
 if myHero.charName ~= "Katarina" then return end
 
@@ -79,6 +79,7 @@ end
 
 function OnTick()
 	ComboFast()
+	ComboLong()
 	ts:update()
 	CastWAuto()
 	SOW:DisableAttacks()
