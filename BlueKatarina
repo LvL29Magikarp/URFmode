@@ -1,4 +1,4 @@
-local Katarina_Ver = "0.010"
+local Katarina_Ver = "0.011"
 
 if myHero.charName ~= "Katarina" then return end
 
@@ -103,7 +103,7 @@ function KatarinaMenu()
 	KatarinaMenu:addSubMenu("ComboExtra", "ComboExtra")
 		KatarinaMenu.ComboExtra:addParam("Packets", "Use Packets (soon)", SCRIPT_PARAM_ONOFF, true)
 		KatarinaMenu.ComboExtra:addParam("CastWAuto", "Cast W Auto", SCRIPT_PARAM_ONOFF, true)
-		KatarinaMenu.ComboExtra:addParam("AutoZhonya", "Use Zhonya When Hp", SCRIPT_PARAM_SLICE, 20,0,100,0)
+		KatarinaMenu.ComboExtra:addParam("AutoZhonya", "Use Zhonya When Hp %", SCRIPT_PARAM_SLICE, 20,0,100,0)
 	KatarinaMenu:addSubMenu("Drawrange", "Drawrange")
 		KatarinaMenu.Drawrange:addParam("RangeQ", "Range Q", SCRIPT_PARAM_ONOFF, true)
 		KatarinaMenu.Drawrange:addParam("RangeW", "Range W", SCRIPT_PARAM_ONOFF, true)
@@ -113,7 +113,7 @@ end
 
 function ComboFast()
 	if KatarinaMenu.Combo.ComboFast then
-	item()
+	itemattack()
 		CastQ()
 		CastE()
 		CastW()
@@ -148,16 +148,16 @@ function CastR()
 	end
 function OnDraw()
    if KatarinaMenu.Drawrange.RangeQ then
-         DrawCircle(myHero.x, myHero.y, myHero.z, 675, 0xFFFF00FF)
+         DrawCircle(myHero.x, myHero.y, myHero.z, 675, 0xDDDDDD)
 		 end
 	 if KatarinaMenu.Drawrange.RangeW then
-         DrawCircle(myHero.x, myHero.y, myHero.z, 375, 0xFFFF00FF)
+         DrawCircle(myHero.x, myHero.y, myHero.z, 375, 0xDDDDDD)
 		 end
 		  if KatarinaMenu.Drawrange.RangeE then
-         DrawCircle(myHero.x, myHero.y, myHero.z, 700, 0xFFFF00FF)
+         DrawCircle(myHero.x, myHero.y, myHero.z, 700, 0xDDDDDD)
 		 end
 			if KatarinaMenu.Drawrange.RangeR then
-         DrawCircle(myHero.x, myHero.y, myHero.z, 550, 0xFFFF00FF)
+         DrawCircle(myHero.x, myHero.y, myHero.z, 550, 0xDDDDDD)
 	
 		end
 end
@@ -221,20 +221,11 @@ GetInventorySlotItem(3131), GetInventorySlotItem(3023), GetInventorySlotItem(315
             BTREADY = (BTSlot ~= nil and myHero:CanUseSpell(BTSLOT) == READY)
 			
  if not myHero.dead then
-      if ZHREADY and myHero.health <= myHero.maxHealth*KatarinaMenu.ComboExtra.AutoZhonya then CastSpell(ZHSlot) end
-      if SEREADY and myHero.health <= myHero.maxHealth*KatarinaMenu.ComboExtra.AutoZhonya then CastSpell(SESlot) end
-      if OmenREADY then CastSpell(OmenSlot) end
-      if SoTDREADY then CastSpell(SoTD) end
-	  --[[
-      if QSREADY and myHero.isCharmed or myHero.isAsleep or myHero.isTaunted or myHero.isFeared or myHero.canMove == false then CastSpell(QSSlot) end
-      if MSREADY and myHero.isCharmed or myHero.isAsleep or myHero.isTaunted or myHero.isFeared or myHero.canMove == false then CastSpell(MSSlot) end
-      if MKREADY and myHero.isCharmed or myHero.isAsleep or myHero.isTaunted or myHero.isFeared or myHero.canMove == false then CastSpell(MKSlot) end
-	  ]]--
-      if RHREADY then CastSpell(RHSlot) end
-      if SRREADY then CastSpell(SRSlot) end
-      if TSREADY then CastSpell(TSSlot) end
+      if ZHREADY and myHero.health <= (myHero.maxHealth*(KatarinaMenu.ComboExtra.AutoZhonya*0.01)) then CastSpell(ZHSlot) end
+      if SEREADY and myHero.health <= (myHero.maxHealth*(KatarinaMenu.ComboExtra.AutoZhonya*0.01)) then CastSpell(SESlot) end
 end
-
+end
+function itemattack()
 if ts.target then
       if DFGREADY then CastSpell(DFGSlot, ts.target) end
       if HXGREADY then CastSpell(HXGSlot, ts.target) end
@@ -243,4 +234,4 @@ if ts.target then
       if BTREADY then CastSpell(BTSlot, ts.target) end
  
  end
- end
+end
