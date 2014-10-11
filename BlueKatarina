@@ -1,4 +1,4 @@
-local Katarina_Ver = "0.009"
+local Katarina_Ver = "0.010"
 
 if myHero.charName ~= "Katarina" then return end
 
@@ -103,6 +103,7 @@ function KatarinaMenu()
 	KatarinaMenu:addSubMenu("ComboExtra", "ComboExtra")
 		KatarinaMenu.ComboExtra:addParam("Packets", "Use Packets (soon)", SCRIPT_PARAM_ONOFF, true)
 		KatarinaMenu.ComboExtra:addParam("CastWAuto", "Cast W Auto", SCRIPT_PARAM_ONOFF, true)
+		KatarinaMenu.ComboExtra:addParam("AutoZhonya", "Use Zhonya When Hp", SCRIPT_PARAM_SLICE, 20,0,100,0)
 	KatarinaMenu:addSubMenu("Drawrange", "Drawrange")
 		KatarinaMenu.Drawrange:addParam("RangeQ", "Range Q", SCRIPT_PARAM_ONOFF, true)
 		KatarinaMenu.Drawrange:addParam("RangeW", "Range W", SCRIPT_PARAM_ONOFF, true)
@@ -175,9 +176,7 @@ function OnGainBuff(unit, buff)
 		ulting = true
 	end
 end
--- / OnGainBuff Function / --
 
--- / OnLoseBuff Function / --
 function OnLoseBuff(unit, buff)
 	if unit.isMe and buff.name == "katarinarsound" then
 		ulting = false
@@ -199,9 +198,10 @@ end
 end
 
 function item()
-DFGSlot, HXGSlot, BWCSlot, YGSlot, BoRKSlot, QSSlot, MSSlot, RHSlot, MKSlot, OmenSlot, SESlot, SRSlot, SoTDSlot, TSSlot, ZHSlot, BTSlot = GetInventorySlotItem(3128), GetInventorySlotItem(3146), GetInventorySlotItem(3144), GetInventorySlotItem(3142), GetInventorySlotItem(3153), GetInventorySlotItem(3140),
-            GetInventorySlotItem(3139), GetInventorySlotItem(3074),
-            GetInventorySlotItem(3222), GetInventorySlotItem(3143), GetInventorySlotItem(3040), GetInventorySlotItem(3069), GetInventorySlotItem(3131), GetInventorySlotItem(3023), GetInventorySlotItem(3157), GetInventorySlotItem(3188)
+DFGSlot, HXGSlot, BWCSlot, YGSlot, BoRKSlot, QSSlot, MSSlot, RHSlot, MKSlot, OmenSlot, SESlot, SRSlot, SoTDSlot, TSSlot, ZHSlot, BTSlot =
+GetInventorySlotItem(3128), GetInventorySlotItem(3146), GetInventorySlotItem(3144), GetInventorySlotItem(3142), GetInventorySlotItem(3153), GetInventorySlotItem(3140),
+GetInventorySlotItem(3139), GetInventorySlotItem(3074), GetInventorySlotItem(3222), GetInventorySlotItem(3143), GetInventorySlotItem(3040), GetInventorySlotItem(3069), 
+GetInventorySlotItem(3131), GetInventorySlotItem(3023), GetInventorySlotItem(3157), GetInventorySlotItem(3188)
            
             DFGREADY = (DFGSlot ~= nil and myHero:CanUseSpell(DFGSlot) == READY)
             HXGREADY = (HXGSlot ~= nil and myHero:CanUseSpell(HXGSlot) == READY)
@@ -219,19 +219,23 @@ DFGSlot, HXGSlot, BWCSlot, YGSlot, BoRKSlot, QSSlot, MSSlot, RHSlot, MKSlot, Ome
             TSREADY = (TSSlot ~= nil and myHero:CanUseSpell(TSSlot) == READY)
             ZHREADY = (ZHSlot ~= nil and myHero:CanUseSpell(ZHSlot) == READY)
             BTREADY = (BTSlot ~= nil and myHero:CanUseSpell(BTSLOT) == READY)
+			
  if not myHero.dead then
-      if ZHREADY and myHero.health <= myHero.maxHealth*0.25 then CastSpell(ZHSlot) end
-      if SEREADY and myHero.health <= myHero.maxHealth*0.25 then CastSpell(SESlot) end
+      if ZHREADY and myHero.health <= myHero.maxHealth*KatarinaMenu.ComboExtra.AutoZhonya then CastSpell(ZHSlot) end
+      if SEREADY and myHero.health <= myHero.maxHealth*KatarinaMenu.ComboExtra.AutoZhonya then CastSpell(SESlot) end
       if OmenREADY then CastSpell(OmenSlot) end
       if SoTDREADY then CastSpell(SoTD) end
+	  --[[
       if QSREADY and myHero.isCharmed or myHero.isAsleep or myHero.isTaunted or myHero.isFeared or myHero.canMove == false then CastSpell(QSSlot) end
       if MSREADY and myHero.isCharmed or myHero.isAsleep or myHero.isTaunted or myHero.isFeared or myHero.canMove == false then CastSpell(MSSlot) end
       if MKREADY and myHero.isCharmed or myHero.isAsleep or myHero.isTaunted or myHero.isFeared or myHero.canMove == false then CastSpell(MKSlot) end
+	  ]]--
       if RHREADY then CastSpell(RHSlot) end
       if SRREADY then CastSpell(SRSlot) end
       if TSREADY then CastSpell(TSSlot) end
-                        end
-                        if ts.target then
+end
+
+if ts.target then
       if DFGREADY then CastSpell(DFGSlot, ts.target) end
       if HXGREADY then CastSpell(HXGSlot, ts.target) end
       if BWCREADY then CastSpell(BWCSlot, ts.target) end
