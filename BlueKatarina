@@ -1,4 +1,4 @@
-local Katarina_Ver = "0.008"
+local Katarina_Ver = "0.009"
 
 if myHero.charName ~= "Katarina" then return end
 
@@ -68,8 +68,19 @@ end
 	
 --[[ END AUTOUPDATE --]]
 
+
+
+        local DFGSlot, HXGSlot, BWCSlot, YGSlot, BoRKSlot, QSSlot, MSSlot, RHSlot, MKSlot, OmenSlot, SESlot, SRSlot, SoTDSlot, TSSlot, ZHSlot = nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil
+        local DFGREADY, HXGREADY, BWCREADY, YGREADY, BoRKREADY, QSREADY, MSREADY, RHREADY, MKREADY, OmenREADY, SEREADY, SRREADY, SoTDREADY, TSREADY, ZHREADY = false, false, false, false, false, false, false, false, false, fasle, false, false, false, false, false
+        local dfgrange = 750
+        local hxgrange = 750
+        local bwcrange = 500
+        local range = 750
+            local tsrange = 700
+
 function OnLoad()
 	KatarinaMenu()
+	ulting = false
 	VP = VPrediction()
 	Orbwalker = SOW(VP)
 	KatarinaMenu:addSubMenu("Orbwalking Settings", "Orbwalking")
@@ -80,9 +91,8 @@ end
 function OnTick()
 	ComboFast()
 	ts:update()
-	UseItems(unit)
 	CastWAuto()
-	loading()
+	item()
 end
 
 function KatarinaMenu()
@@ -102,7 +112,7 @@ end
 
 function ComboFast()
 	if KatarinaMenu.Combo.ComboFast then
-	UseItems(unit)
+	item()
 		CastQ()
 		CastE()
 		CastW()
@@ -151,24 +161,31 @@ function OnDraw()
 		end
 end
 
-function loading()
 
-	Items = {
-		BRK = { id = 3153, range = 450, reqTarget = true, slot = nil },
-		BWC = { id = 3144, range = 400, reqTarget = true, slot = nil },
-		DFG = { id = 3128, range = 750, reqTarget = true, slot = nil },
-		HGB = { id = 3146, range = 400, reqTarget = true, slot = nil },
-		RSH = { id = 3074, range = 350, reqTarget = false, slot = nil },
-		STD = { id = 3131, range = 350, reqTarget = false, slot = nil },
-		TMT = { id = 3077, range = 350, reqTarget = false, slot = nil },
-		YGB = { id = 3142, range = 350, reqTarget = false, slot = nil },
-		BFT = { id = 3188, range = 750, reqTarget = true, slot = nil },
-		RND = { id = 3143, range = 275, reqTarget = false, slot = nil }
-	}
+function OnProcessSpell(object,spell)
+	if object == myHero then
+		if spell.name:lower():find("katarinar") then
+			ulting = true
+		end
+	end
+end
+
+function OnGainBuff(unit, buff)
+	if unit.isMe and buff.name == "katarinarsound" then
+		ulting = true
+	end
+end
+-- / OnGainBuff Function / --
+
+-- / OnLoseBuff Function / --
+function OnLoseBuff(unit, buff)
+	if unit.isMe and buff.name == "katarinarsound" then
+		ulting = false
+	end
 end
 
 function OnSendPacket(p)
-if castingUlt then
+if ulting then
 	packet = Packet(p)
 	if packet:get('sourceNetworkId') == myHero.networkID then
 		packetName = packet:get('name')
@@ -178,33 +195,48 @@ if castingUlt then
 			packet:block()
 		end
 	end
-	end
+end
 end
 
-function OnGainBuff(unit, buff)
-	if unit.isMe and buff.name == "katarinarsound" then
-		castingUlt = true
-	end
-end
-function OnLoseBuff(unit, buff)
-	if unit.isMe and buff.name == "katarinarsound" then
-		castingUlt = false
-	end
-end
-
-function UseItems(unit)
-	if unit ~= nil then
-		for _, item in pairs(Items) do
-			item.slot = GetInventorySlotItem(item.id)
-			if item.slot ~= nil then
-				if item.reqTarget and GetDistance(unit) < item.range then
-					CastSpell(item.slot, unit)
-				elseif not item.reqTarget then
-					if (GetDistance(unit) - getHitBoxRadius(myHero) - getHitBoxRadius(unit)) < 50 then
-						CastSpell(item.slot)
-					end
-				end
-			end
-		end
-	end
-end
+function item()
+DFGSlot, HXGSlot, BWCSlot, YGSlot, BoRKSlot, QSSlot, MSSlot, RHSlot, MKSlot, OmenSlot, SESlot, SRSlot, SoTDSlot, TSSlot, ZHSlot, BTSlot = GetInventorySlotItem(3128), GetInventorySlotItem(3146), GetInventorySlotItem(3144), GetInventorySlotItem(3142), GetInventorySlotItem(3153), GetInventorySlotItem(3140),
+            GetInventorySlotItem(3139), GetInventorySlotItem(3074),
+            GetInventorySlotItem(3222), GetInventorySlotItem(3143), GetInventorySlotItem(3040), GetInventorySlotItem(3069), GetInventorySlotItem(3131), GetInventorySlotItem(3023), GetInventorySlotItem(3157), GetInventorySlotItem(3188)
+           
+            DFGREADY = (DFGSlot ~= nil and myHero:CanUseSpell(DFGSlot) == READY)
+            HXGREADY = (HXGSlot ~= nil and myHero:CanUseSpell(HXGSlot) == READY)
+            BWCREADY = (BWCSlot ~= nil and myHero:CanUseSpell(BWCSlot) == READY)
+            YGSREADY = (YGSSlot ~= nil and myHero:CanUseSpell(YGSlot) == READY)
+            BoRKREADY = (BoRKSlot ~= nil and myHero:CanUseSpell(BoRKSlot) == READY)
+            QSREADY = (QSSlot ~= nil and myHero:CanUseSpell(QSSlot) == READY)
+            MSREADY = (MSSlot ~= nil and myHero:CanUseSpell(MSSlot) == READY)
+            RHREADY = (RHSlot ~= nil and myHero:CanUseSpell(RHSlot) == READY)
+            MKREADY = (MKSlot ~= nil and myHero:CanUseSpell(MKSlot) == READY)
+            OmenREADY = (OmenSlot ~= nil and myHero:CanUseSpell(OmenSlot) == READY)
+            SEREADY = (SESlot ~= nil and myHero:CanUseSpell(SESlot) == READY)
+            SRREADY = (SRSlot ~= nil and myHero:CanUseSpell(SRSlot) == READY)
+            SoTDREADY = (SoTDSlot ~= nil and myHero:CanUseSpell(SoTDSlot) == READY)
+            TSREADY = (TSSlot ~= nil and myHero:CanUseSpell(TSSlot) == READY)
+            ZHREADY = (ZHSlot ~= nil and myHero:CanUseSpell(ZHSlot) == READY)
+            BTREADY = (BTSlot ~= nil and myHero:CanUseSpell(BTSLOT) == READY)
+ if not myHero.dead then
+      if ZHREADY and myHero.health <= myHero.maxHealth*0.25 then CastSpell(ZHSlot) end
+      if SEREADY and myHero.health <= myHero.maxHealth*0.25 then CastSpell(SESlot) end
+      if OmenREADY then CastSpell(OmenSlot) end
+      if SoTDREADY then CastSpell(SoTD) end
+      if QSREADY and myHero.isCharmed or myHero.isAsleep or myHero.isTaunted or myHero.isFeared or myHero.canMove == false then CastSpell(QSSlot) end
+      if MSREADY and myHero.isCharmed or myHero.isAsleep or myHero.isTaunted or myHero.isFeared or myHero.canMove == false then CastSpell(MSSlot) end
+      if MKREADY and myHero.isCharmed or myHero.isAsleep or myHero.isTaunted or myHero.isFeared or myHero.canMove == false then CastSpell(MKSlot) end
+      if RHREADY then CastSpell(RHSlot) end
+      if SRREADY then CastSpell(SRSlot) end
+      if TSREADY then CastSpell(TSSlot) end
+                        end
+                        if ts.target then
+      if DFGREADY then CastSpell(DFGSlot, ts.target) end
+      if HXGREADY then CastSpell(HXGSlot, ts.target) end
+      if BWCREADY then CastSpell(BWCSlot, ts.target) end
+      if BoRKREADY then CastSpell(BoRKSlot, ts.target) end
+      if BTREADY then CastSpell(BTSlot, ts.target) end
+ 
+ end
+ end
