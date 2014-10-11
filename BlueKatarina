@@ -93,6 +93,7 @@ function OnTick()
 	ts:update()
 	CastWAuto()
 	item()
+	CC()
 end
 
 function KatarinaMenu()
@@ -162,12 +163,25 @@ function OnDraw()
 		end
 end
 
+function CC()
+        if KatarinaMenu.ComboExtra.Qss then
+                if (myHero:CanUseSpell(QSSlot) == READY) and myHero.canMove == false then
+                        CastSpell(QSSlot)
+                end
+        end
+end
 
 function OnProcessSpell(object,spell)
 	if object == myHero then
 		if spell.name:lower():find("katarinar") then
 			ulting = true
 		end
+	end
+end
+
+function OnWndMsg(msg, key)
+	if msg == WM_RBUTTONDOWN and ulting then 
+		ulting = false
 	end
 end
 
