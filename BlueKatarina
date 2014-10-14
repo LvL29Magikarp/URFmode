@@ -1,4 +1,4 @@
-local Katarina_Ver = "0.011"
+local Katarina_Ver = "0.012"
 
 if myHero.charName ~= "Katarina" then return end
 
@@ -75,9 +75,21 @@ end
         local dfgrange = 750
         local hxgrange = 750
         local bwcrange = 500
-        local range = 750
+        local range = 700
             local tsrange = 700
 
+
+function dmg()
+for i=1, heroManager.iCount do
+		local enemy = heroManager:GetHero(i)
+			if ValidTarget(enemy) and enemy ~= nil then
+			qDmg = (((myHero:CanUseSpell(_Q) == READY) and getDmg("Q",enemy,myHero)) or 0)
+			wDmg = (((myHero:CanUseSpell(_W) == READY) and getDmg("W",enemy,myHero)) or 0)
+			eDmg = (((myHero:CanUseSpell(_E) == READY) and getDmg("E",enemy,myHero)) or 0)
+end
+end
+end
+				
 function OnLoad()
 	KatarinaMenu()
 	ulting = false
@@ -89,27 +101,36 @@ function OnLoad()
 end
 
 function OnTick()
-	ComboFast()
+	if ComboFast() then
+	ComboFast() end
 	ts:update()
-	CastWAuto()
+	Target = ts.target
+	if CastWAuto() then
+	CastWAuto() end
 	item()
-	CC()
+	--CC()
+	dmg()
 end
 
 function KatarinaMenu()
 	KatarinaMenu = scriptConfig("BlueKatarina", "Katarina")
 	
-	KatarinaMenu:addSubMenu("Combo", "Combo")
+	KatarinaMenu:addSubMenu("Keys", "Combo")
 		KatarinaMenu.Combo:addParam("ComboFast", "Fast Combo", SCRIPT_PARAM_ONKEYDOWN, false, 32)
 	KatarinaMenu:addSubMenu("ComboExtra", "ComboExtra")
 		KatarinaMenu.ComboExtra:addParam("Packets", "Use Packets (soon)", SCRIPT_PARAM_ONOFF, true)
 		KatarinaMenu.ComboExtra:addParam("CastWAuto", "Cast W Auto", SCRIPT_PARAM_ONOFF, true)
 		KatarinaMenu.ComboExtra:addParam("AutoZhonya", "Use Zhonya When Hp %", SCRIPT_PARAM_SLICE, 20,0,100,0)
+		--KatarinaMenu.ComboExtra:addParam("Qss", "Auto Qss When Stunned", SCRIPT_PARAM_ONOFF, true)
+		KatarinaMenu.ComboExtra:addParam("stopE", "Stop ult with E", SCRIPT_PARAM_ONOFF, true)
 	KatarinaMenu:addSubMenu("Drawrange", "Drawrange")
 		KatarinaMenu.Drawrange:addParam("RangeQ", "Range Q", SCRIPT_PARAM_ONOFF, true)
 		KatarinaMenu.Drawrange:addParam("RangeW", "Range W", SCRIPT_PARAM_ONOFF, true)
 		KatarinaMenu.Drawrange:addParam("RangeE", "Range E", SCRIPT_PARAM_ONOFF, true)
 		KatarinaMenu.Drawrange:addParam("RangeR", "Range R", SCRIPT_PARAM_ONOFF, true)
+		TargetSelector = TargetSelector(TARGET_LESS_CAST, 700, DAMAGE_MAGIC, true)
+			TargetSelector.name = "Katarina"
+			KatarinaMenu:addTS(TargetSelector)
 end
 
 function ComboFast()
@@ -163,6 +184,8 @@ function OnDraw()
 		end
 end
 
+--[[
+
 function CC()
         if KatarinaMenu.ComboExtra.Qss then
                 if (myHero:CanUseSpell(QSSlot) == READY) and myHero.canMove == false then
@@ -170,6 +193,8 @@ function CC()
                 end
         end
 end
+
+--]]
 
 function OnProcessSpell(object,spell)
 	if object == myHero then
@@ -195,20 +220,6 @@ function OnLoseBuff(unit, buff)
 	if unit.isMe and buff.name == "katarinarsound" then
 		ulting = false
 	end
-end
-
-function OnSendPacket(p)
-if ulting then
-	packet = Packet(p)
-	if packet:get('sourceNetworkId') == myHero.networkID then
-		packetName = packet:get('name')
-                if packetName == 'S_MOVE' then
-			packet:block()
-		elseif packetName == 'S_CAST' then
-			packet:block()
-		end
-	end
-end
 end
 
 function item()
@@ -248,4 +259,21 @@ if ts.target then
       if BTREADY then CastSpell(BTSlot, ts.target) end
  
  end
+end
+
+
+function OnSendPacket(packet)
+    local UltPacket = Packet(packet)
+    if ulting then
+        --Now we set what we want to block (Move, Cast normal spells and Summoner spells) and check if it really is our hero
+        if (UltPacket:get("name") == "S_MOVE" or "S_CAST") or (UltPacket:get("spellId") == SUMMONER_1 or SUMMONER_2) then
+            if UltPacket:get("sourceNetworkId") == myHero.networkID then
+                if KatarinaMenu.ComboExtra.stopE and GetDistance(Target) < 700 and (myHero:CanUseSpell(_E) == READY) and (myHero:CanUseSpell(_W) == READY) and getDmg("E", Target, myHero) + (getDmg("E", Target, myHero) > Target.health) then
+				return
+                else
+                    UltPacket:block()
+                end
+            end
+        end
+    end
 end
