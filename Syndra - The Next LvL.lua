@@ -1,4 +1,4 @@
-local version = "0.04"
+local version = "0.05"
 
 _G.UseUpdater = true
 
@@ -71,7 +71,6 @@ function OnLoad()
 		RND = { id = 3143, range = 275, reqTarget = false, slot = nil }
 	}
 	
-	rrange = 675
 	BallTable = 24
 	havetarget = false
 	for i=1, BallTable do
@@ -462,6 +461,15 @@ end
 function OnDraw()
 		if qrdy then
 		 DrawCircle2(myHero.x, myHero.y, myHero.z, Qrange, 0xFFFF00FF)
+		end
+		if wrdy then
+		 DrawCircle2(myHero.x, myHero.y, myHero.z, Wrange, 0xFFFF00FF)
+		end
+		if erdy then
+		 DrawCircle2(myHero.x, myHero.y, myHero.z, Erange, 0xFFFF00FF)
+		end
+		if rrdy then
+		 DrawCircle2(myHero.x, myHero.y, myHero.z, 675, 0xFFFF00FF)
 		end
 
 end
