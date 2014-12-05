@@ -1,4 +1,4 @@
-local version = "0.02"
+local version = "0.03"
 
 _G.UseUpdater = true
 
@@ -55,6 +55,7 @@ function OnLoad()
 	Menu()
 	VP = VPrediction()
 	Info()
+	LoadJungle()
 	Balls = {}
 	BallCount = 0
 	Items = {
@@ -86,7 +87,8 @@ Menu:addTS(ts)
 lastAttack, lastWindUpTime, lastAttackCD = 0, 0, 0
 
 	qrdy, wrdy, erdy, rrdy = false, false, false, false
-	
+	_G.oldDrawCircle = rawget(_G, 'DrawCircle')
+	_G.DrawCircle = DrawCircle2
 end
 
 --[[
@@ -96,7 +98,14 @@ end
 --]]
 
 function OnTick()
-
+	Qrange = Menu.Qsett.Qrange
+	Qdelay = Menu.Qsett.Qdelay
+	Qwidth = Menu.Qsett.Qwidth
+	Qspeed = Menu.Qsett.Qspeed
+	Wrange = Menu.Wsett.Wrange
+	Wdelay = Menu.Wsett.Wdelay
+	Wwidth = Menu.Wsett.Wwidth
+	Wspeed = Menu.Wsett.Qspeed
 	ts:update()
 	Minions:update()
 	
@@ -133,9 +142,23 @@ function Menu()
 	Menu:addSubMenu("Combo", "Combo")
 		Menu.Combo:addParam("Combo", "Combo", SCRIPT_PARAM_ONKEYDOWN, false, 32)
 		Menu.Combo:addParam("OrbWalk", "Orbwalking", SCRIPT_PARAM_ONOFF, false)
-		
-				
-		
+	Menu:addSubMenu("Q settings", "Qsett")
+		Menu.Qsett:addParam("Qcombo", "Q in Combo", SCRIPT_PARAM_ONOFF, true)
+		Menu.Qsett:addParam("Qrange", "Q Range", SCRIPT_PARAM_SLICE, 0, 0, 1000, 0)
+		Menu.Qsett:addParam("Qdelay", "Q Delay", SCRIPT_PARAM_SLICE, 0, 0, 1, 2)
+		Menu.Qsett:addParam("Qwidth", "Q Width", SCRIPT_PARAM_SLICE, 0, 0, 350, 0)
+		Menu.Qsett:addParam("Qspeed", "Q Speed", SCRIPT_PARAM_SLICE, 0, 0, 2000, 0)
+		Menu.Qsett:addParam("Info", "I prefer to set: Q Range = 800, Q Delay = 0.10,", SCRIPT_PARAM_INFO, "")
+		Menu.Qsett:addParam("Info", "Q Width = 200, Q Speed = 1800", SCRIPT_PARAM_INFO, "")
+	Menu:addSubMenu("W settings", "Wsett")
+		Menu.Wsett:addParam("Wcombo", "W in Combo", SCRIPT_PARAM_ONOFF, true)
+		Menu.Wsett:addParam("Grabjungle", "Grab Jungle Mob", SCRIPT_PARAM_ONOFF, true)
+		Menu.Wsett:addParam("Wrange", "W Range", SCRIPT_PARAM_SLICE, 0, 0, 1100, 0)
+		Menu.Wsett:addParam("Wdelay", "W Delay", SCRIPT_PARAM_SLICE, 0, 0, 1, 2)
+		Menu.Wsett:addParam("Wwidth", "W Width", SCRIPT_PARAM_SLICE, 0, 0, 350, 0)
+		Menu.Wsett:addParam("Wspeed", "W Speed", SCRIPT_PARAM_SLICE, 0, 0, 2000, 0)
+		Menu.Wsett:addParam("Info", "I prefer to set: W Range = 925, W Delay = 0.10,", SCRIPT_PARAM_INFO, "")
+		Menu.Wsett:addParam("Info", "W Width = 200, W Speed = 1450", SCRIPT_PARAM_INFO, "")
 		
 end
 
@@ -144,7 +167,6 @@ end
 					  Combo
 *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 --]]
-
 
 function Combo()
 if Menu.Combo.Combo then
@@ -165,8 +187,8 @@ end
 --]]
 
 function UseQ()
-if qrdy and GetDistance(Target) <= 800 then
-	CastPosition,  HitChance,  Position = VP:GetLineCastPosition(Target, 0.01, 200, 800, 1750, myHero)
+if qrdy and Qcombo and GetDistance(Target) <= Qrange then
+	CastPosition,  HitChance,  Position = VP:GetLineCastPosition(Target, Qdelay, Qwidth, Qrange, Qspeed, myHero)
 		if HitChance >= 2 then
 			if VIP_USER then Packet("S_CAST", { spellId = _Q, toX = CastPosition.x, toY = CastPosition.z, fromX = CastPosition.x, fromY = CastPosition.z }):send() end
 			else
@@ -187,11 +209,11 @@ if erdy and GetDistance(Target) <= 700 then
 end
 
 function UseW()
-if wrdy and GetDistance(Target) <= 925 then
+if wrdy and Wcombo and GetDistance(Target) <= Wrange then
 	GrabObject()
 		end
 	if havetarget then
-	CastPosition,  HitChance,  Position = VP:GetLineCastPosition(Target, 0.01, 200, 925, 1450, myHero)
+	CastPosition,  HitChance,  Position = VP:GetLineCastPosition(Target, Wdelay, Wwidth, Wrange, Wspeed, myHero)
 		if HitChance >= 2 then
 			if VIP_USER then Packet("S_CAST", { spellId = _W, toX = CastPosition.x, toY = CastPosition.z, fromX = CastPosition.x, fromY = CastPosition.z }):send() end
 			else
@@ -310,13 +332,22 @@ function OnDeleteObj(obj)
 		end
 end
 
-function Dfg()
-	if dfgReady and ValidTarget(Target) and GetDistance(Target) < rrange then
-	CastSpell(dfgSlot, Target)
+
+function LoadJungle()
+if Grabjungle then
+	for i = 1, objManager.maxObjects do
+		local obj = objManager:getObject(i)
+		if obj ~= nil and obj.type == "obj_AI_Minion" and obj.name ~= nil then
+			if obj.name == "TT_Spiderboss7.1.1" then Vilemaw = obj
+			elseif obj.name == "Worm12.1.1" then Nashor = obj
+			elseif obj.name == "Dragon6.1.1" then Dragon = obj
+			elseif obj.name == "AncientGolem1.1.1" then Golem1 = obj
+			elseif obj.name == "AncientGolem7.1.1" then Golem2 = obj
+			elseif obj.name == "LizardElder4.1.1" then Lizard1 = obj
+			elseif obj.name == "LizardElder10.1.1" then Lizard2 = obj end
+		end
 	end
-	if BRKReady and ValidTarget(Target) and GetDistance(Target) < rrange then
-	CastSpell(BRKSlot, Target)
-	end
+end
 end
 --[[
 *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -402,4 +433,45 @@ function UseItems(unit)
 			end
 		end
 	end
+end
+
+--[[
+*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+					OnDraw
+*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+--]]
+
+function OnDraw()
+		if qrdy then
+		 DrawCircle2(myHero.x, myHero.y, myHero.z, Qrange, 0xFFFF00FF)
+		end
+
+end
+
+-- Lag free circles (by barasia, vadash and viseversa)
+function DrawCircleNextLvl(x, y, z, radius, width, color, chordlength)
+    radius = radius or 300
+  quality = math.max(8,round(180/math.deg((math.asin((chordlength/(2*radius)))))))
+  quality = 2 * math.pi / quality
+  radius = radius*.92
+    local points = {}
+    for theta = 0, 2 * math.pi + quality, quality do
+        local c = WorldToScreen(D3DXVECTOR3(x + radius * math.cos(theta), y, z - radius * math.sin(theta)))
+        points[#points + 1] = D3DXVECTOR2(c.x, c.y)
+    end
+    DrawLines2(points, width or 1, color or 4294967295)
+end
+
+function round(num) 
+ if num >= 0 then return math.floor(num+.5) else return math.ceil(num-.5) end
+end
+
+function DrawCircle2(x, y, z, radius, color)
+    local vPos1 = Vector(x, y, z)
+    local vPos2 = Vector(cameraPos.x, cameraPos.y, cameraPos.z)
+    local tPos = vPos1 - (vPos1 - vPos2):normalized() * radius
+    local sPos = WorldToScreen(D3DXVECTOR3(tPos.x, tPos.y, tPos.z))
+    if OnScreen({ x = sPos.x, y = sPos.y }, { x = sPos.x, y = sPos.y }) then
+        DrawCircleNextLvl(x, y, z, radius, 1, color, 75) 
+    end
 end
