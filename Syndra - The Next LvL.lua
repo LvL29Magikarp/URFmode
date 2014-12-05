@@ -1,4 +1,5 @@
 local version = "0.01"
+
 _G.UseUpdater = true
 
 local DOWNLOADING_LIBS, DOWNLOAD_COUNT = false, 0
@@ -10,18 +11,6 @@ function AfterDownload()
 		print("Press x2 f9")
 	end
 end
-
-for DOWNLOAD_LIB_NAME, DOWNLOAD_LIB_URL in pairs(REQUIRED_LIBS) do
-	if FileExist(LIB_PATH .. DOWNLOAD_LIB_NAME .. ".lua") then
-		require(DOWNLOAD_LIB_NAME)
-	else
-		DOWNLOADING_LIBS = true
-		DOWNLOAD_COUNT = DOWNLOAD_COUNT + 1
-		DownloadFile(DOWNLOAD_LIB_URL, LIB_PATH .. DOWNLOAD_LIB_NAME..".lua", AfterDownload)
-	end
-end
-
-if DOWNLOADING_LIBS then return end
 
 local UPDATE_NAME = "Syndra - The Next LvL"
 local UPDATE_HOST = "raw.github.com"
