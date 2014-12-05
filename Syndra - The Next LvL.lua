@@ -1,4 +1,4 @@
-local version = "0.05"
+local version = "0.06"
 
 _G.UseUpdater = true
 
@@ -150,7 +150,6 @@ function Menu()
 		Menu.Combo:addParam("ComboMode", "ComboMode", SCRIPT_PARAM_LIST, 1, { "The Fastest combo", "Max DMG"})
 		Menu.Combo:addParam("Items", "Use Items", SCRIPT_PARAM_ONOFF, false)
 	Menu:addSubMenu("Q settings", "Qsett")
-		Menu.Qsett:addParam("Qcombo", "Q in Combo", SCRIPT_PARAM_ONOFF, true)
 		Menu.Qsett:addParam("Qrange", "Q Range", SCRIPT_PARAM_SLICE, 0, 0, 1000, 0)
 		Menu.Qsett:addParam("Qdelay", "Q Delay", SCRIPT_PARAM_SLICE, 0, 0, 1, 2)
 		Menu.Qsett:addParam("Qwidth", "Q Width", SCRIPT_PARAM_SLICE, 0, 0, 350, 0)
@@ -158,7 +157,6 @@ function Menu()
 		Menu.Qsett:addParam("Info", "I prefer to set: Q Range = 800, Q Delay = 0.10,", SCRIPT_PARAM_INFO, "")
 		Menu.Qsett:addParam("Info", "Q Width = 200, Q Speed = 1800", SCRIPT_PARAM_INFO, "")
 	Menu:addSubMenu("W settings", "Wsett")
-		Menu.Wsett:addParam("Wcombo", "W in Combo", SCRIPT_PARAM_ONOFF, true)
 		Menu.Wsett:addParam("Grabjungle", "Grab Jungle Mob", SCRIPT_PARAM_ONOFF, true)
 		Menu.Wsett:addParam("Wrange", "W Range", SCRIPT_PARAM_SLICE, 0, 0, 1100, 0)
 		Menu.Wsett:addParam("Wdelay", "W Delay", SCRIPT_PARAM_SLICE, 0, 0, 1, 2)
@@ -167,10 +165,8 @@ function Menu()
 		Menu.Wsett:addParam("Info", "I prefer to set: W Range = 925, W Delay = 0.10,", SCRIPT_PARAM_INFO, "")
 		Menu.Wsett:addParam("Info", "W Width = 200, W Speed = 1450", SCRIPT_PARAM_INFO, "")
 	Menu:addSubMenu("E settings", "Esett")
-		Menu.Esett:addParam("Ecombo", "E in Combo", SCRIPT_PARAM_ONOFF, true)
 		Menu.Esett:addParam("Erange", "E Range", SCRIPT_PARAM_SLICE, 0, 0, 1000, 0)
 		Menu.Esett:addParam("Edelay", "E Delay", SCRIPT_PARAM_SLICE, 0, 0, 1, 2)
-		Menu.Esett:addParam("EWidth", "E Angle", SCRIPT_PARAM_SLICE, 0, 0, 100, 0)
 		Menu.Esett:addParam("Espeed", "E Speed", SCRIPT_PARAM_SLICE, 0, 0, 1500, 0)
 		Menu.Esett:addParam("Info", "I prefer to set: E Range = 700, E Delay = 0.10,", SCRIPT_PARAM_INFO, "")
 		Menu.Esett:addParam("Info", "E angle = 50, E Speed = 900", SCRIPT_PARAM_INFO, "")
@@ -187,13 +183,21 @@ end
 
 function Combo()
 	if Menu.Combo.Combo and Menu.Combo.ComboMode == 1 then
-	if Items then UseItems(Target) end
-	if Wcombo then UseW() end
-	if Rcombo then UseR() end
-	if Qcombo then UseQ() end
-	if Ecombo then UseE() end
+UseItems(Target) 
+UseW() 
+UseR() 
+UseQ() 
+UseE() 
+	end
+	if Menu.Combo.Combo and Menu.Combo.ComboMode == 2 then
+UseItems(Target) 
+UseW()
+UseQ() 
+UseE()
+UseR()
 	end
 end
+
 
 
 
@@ -204,7 +208,7 @@ end
 --]]
 
 function UseQ()
-if qrdy and Qcombo and GetDistance(Target) <= Qrange then
+if qrdy and GetDistance(Target) <= Qrange then
 	CastPosition,  HitChance,  Position = VP:GetLineCastPosition(Target, Qdelay, Qwidth, Qrange, Qspeed, myHero)
 		if HitChance >= 2 then
 			if VIP_USER then Packet("S_CAST", { spellId = _Q, toX = CastPosition.x, toY = CastPosition.z, fromX = CastPosition.x, fromY = CastPosition.z }):send() end
@@ -216,7 +220,7 @@ end
 
 function UseE()
 if erdy and GetDistance(Target) <= 700 then
-	CastPosition,  HitChance,  Position = VP:GetLineCastPosition(Target, Edelay, EWidth*math.pi/180, Erange, Espeed, myHero)
+	CastPosition,  HitChance,  Position = VP:GetLineCastPosition(Target, Edelay, 50*math.pi/180, Erange, Espeed, myHero)
 		if HitChance >= 2 then
 			if VIP_USER then Packet("S_CAST", { spellId = _E, toX = CastPosition.x, toY = CastPosition.z, fromX = CastPosition.x, fromY = CastPosition.z }):send() end
 			else
@@ -226,7 +230,7 @@ if erdy and GetDistance(Target) <= 700 then
 end
 
 function UseW()
-if wrdy and Wcombo and GetDistance(Target) <= Wrange then
+if wrdy and GetDistance(Target) <= Wrange then
 	GrabObject()
 		end
 	if havetarget then
