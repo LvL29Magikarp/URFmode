@@ -18,7 +18,7 @@ local UPDATE_PATH = "/LvL29Magikarp/URFmode/master/Syndra%20-%20The%20Next%20LvL
 local UPDATE_FILE_PATH = SCRIPT_PATH..UPDATE_NAME..".lua"
 local UPDATE_URL = "http://"..UPDATE_HOST..UPDATE_PATH
 
-function AutoupdaterMsg(msg) print("<b><font color=\"#234574\">"..UPDATE_NAME..":</font></b> <font color=\"#423234\">"..msg..".</font>") end
+function AutoupdaterMsg(msg) print("<b><font color=\"#FFFF00\">"..UPDATE_NAME..":</font></b> <font color=\"#00FFFF\">"..msg..".</font>") end
 if _G.UseUpdater then
 	local ServerData = GetWebResult(UPDATE_HOST, UPDATE_PATH)
 	if ServerData then
