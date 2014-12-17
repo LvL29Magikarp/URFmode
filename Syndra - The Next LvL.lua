@@ -1,4 +1,4 @@
-local version = "0.06"
+local version = "0.07"
 
 _G.UseUpdater = true
 
@@ -97,20 +97,19 @@ end
 --]]
 
 function OnTick()
-	Qrange = Menu.Qsett.Qrange
-	Qdelay = Menu.Qsett.Qdelay
-	Qwidth = Menu.Qsett.Qwidth
-	Qspeed = Menu.Qsett.Qspeed
+	Qrange = Menu.Qsett.Qadv.Qrange
+	Qdelay = Menu.Qsett.Qadv.Qdelay
+	Qwidth = Menu.Qsett.Qadv.Qwidth
+	Qspeed = Menu.Qsett.Qadv.Qspeed
 	
-	Wrange = Menu.Wsett.Wrange
-	Wdelay = Menu.Wsett.Wdelay
-	Wwidth = Menu.Wsett.Wwidth
-	Wspeed = Menu.Wsett.Wspeed
+	Wrange = Menu.Wsett.Wadv.Wrange
+	Wdelay = Menu.Wsett.Wadv.Wdelay
+	Wwidth = Menu.Wsett.Wadv.Wwidth
+	Wspeed = Menu.Wsett.Wadv.Wspeed
 	
-	Erange = Menu.Esett.Erange
-	Edelay = Menu.Esett.Edelay
-	Ewidth = Menu.Esett.Ewidth
-	Espeed = Menu.Esett.Espeed
+	Erange = Menu.Esett.Eadv.Erange
+	Edelay = Menu.Esett.Eadv.Edelay
+	Espeed = Menu.Esett.Eadv.Espeed
 	ts:update()
 	Minions:update()
 	
@@ -149,29 +148,58 @@ function Menu()
 		Menu.Combo:addParam("OrbWalk", "Orbwalking", SCRIPT_PARAM_ONOFF, true)
 		Menu.Combo:addParam("ComboMode", "ComboMode", SCRIPT_PARAM_LIST, 1, { "The Fastest combo", "Max DMG"})
 		Menu.Combo:addParam("Items", "Use Items", SCRIPT_PARAM_ONOFF, false)
+		
 	Menu:addSubMenu("Q settings", "Qsett")
-		Menu.Qsett:addParam("Qrange", "Q Range", SCRIPT_PARAM_SLICE, 0, 0, 1000, 0)
-		Menu.Qsett:addParam("Qdelay", "Q Delay", SCRIPT_PARAM_SLICE, 0, 0, 1, 2)
-		Menu.Qsett:addParam("Qwidth", "Q Width", SCRIPT_PARAM_SLICE, 0, 0, 350, 0)
-		Menu.Qsett:addParam("Qspeed", "Q Speed", SCRIPT_PARAM_SLICE, 0, 0, 2000, 0)
-		Menu.Qsett:addParam("Info", "I prefer to set: Q Range = 800, Q Delay = 0.10,", SCRIPT_PARAM_INFO, "")
-		Menu.Qsett:addParam("Info", "Q Width = 200, Q Speed = 1800", SCRIPT_PARAM_INFO, "")
+		Menu.Qsett:addParam("Qcombo", "Q in Combo", SCRIPT_PARAM_ONOFF, true)
+			
+			Menu.Qsett:addSubMenu("Q Advanced Config", "Qadv")
+				Menu.Qsett.Qadv:addParam("Qrange", "Q Range", SCRIPT_PARAM_SLICE, 0, 0, 1000, 0)
+				Menu.Qsett.Qadv:addParam("Blank", "I prefer set to: 800", SCRIPT_PARAM_INFO, "")
+				Menu.Qsett.Qadv:addParam("Blank", "", SCRIPT_PARAM_INFO, "")
+				Menu.Qsett.Qadv:addParam("Qdelay", "Q Delay", SCRIPT_PARAM_SLICE, 0, 0, 1, 2)
+				Menu.Qsett.Qadv:addParam("Blank", "I prefer set to: 0.10", SCRIPT_PARAM_INFO, "")
+				Menu.Qsett.Qadv:addParam("Blank", "", SCRIPT_PARAM_INFO, "")
+				Menu.Qsett.Qadv:addParam("Qwidth", "Q Width", SCRIPT_PARAM_SLICE, 0, 0, 350, 0)
+				Menu.Qsett.Qadv:addParam("Blank", "I prefer set to: 200", SCRIPT_PARAM_INFO, "")
+				Menu.Qsett.Qadv:addParam("Blank", "", SCRIPT_PARAM_INFO, "")
+				Menu.Qsett.Qadv:addParam("Qspeed", "Q Speed", SCRIPT_PARAM_SLICE, 0, 0, 2000, 0)
+				Menu.Qsett.Qadv:addParam("Blank", "I prefer set to: 1800", SCRIPT_PARAM_INFO, "")
+				
 	Menu:addSubMenu("W settings", "Wsett")
 		Menu.Wsett:addParam("Grabjungle", "Grab Jungle Mob", SCRIPT_PARAM_ONOFF, true)
-		Menu.Wsett:addParam("Wrange", "W Range", SCRIPT_PARAM_SLICE, 0, 0, 1100, 0)
-		Menu.Wsett:addParam("Wdelay", "W Delay", SCRIPT_PARAM_SLICE, 0, 0, 1, 2)
-		Menu.Wsett:addParam("Wwidth", "W Width", SCRIPT_PARAM_SLICE, 0, 0, 350, 0)
-		Menu.Wsett:addParam("Wspeed", "W Speed", SCRIPT_PARAM_SLICE, 0, 0, 2000, 0)
-		Menu.Wsett:addParam("Info", "I prefer to set: W Range = 925, W Delay = 0.10,", SCRIPT_PARAM_INFO, "")
-		Menu.Wsett:addParam("Info", "W Width = 200, W Speed = 1450", SCRIPT_PARAM_INFO, "")
+		Menu.Wsett:addParam("Wcombo", "W in Combo", SCRIPT_PARAM_ONOFF, true)
+			
+			Menu.Wsett:addSubMenu("W Advanced Config", "Wadv")
+				Menu.Wsett.Wadv:addParam("Wrange", "W Range", SCRIPT_PARAM_SLICE, 0, 0, 1100, 0)
+				Menu.Wsett.Wadv:addParam("Blank", "I prefer set to: 925-950", SCRIPT_PARAM_INFO, "")
+				Menu.Wsett.Wadv:addParam("Blank", "", SCRIPT_PARAM_INFO, "")
+				Menu.Wsett.Wadv:addParam("Wdelay", "W Delay", SCRIPT_PARAM_SLICE, 0, 0, 1, 2)
+				Menu.Wsett.Wadv:addParam("Blank", "I prefer set to: 0.10", SCRIPT_PARAM_INFO, "")
+				Menu.Wsett.Wadv:addParam("Blank", "", SCRIPT_PARAM_INFO, "")
+				Menu.Wsett.Wadv:addParam("Wwidth", "W Width", SCRIPT_PARAM_SLICE, 0, 0, 350, 0)
+				Menu.Wsett.Wadv:addParam("Blank", "I prefer set to: 200", SCRIPT_PARAM_INFO, "")
+				Menu.Wsett.Wadv:addParam("Blank", "", SCRIPT_PARAM_INFO, "")
+				Menu.Wsett.Wadv:addParam("Wspeed", "W Speed", SCRIPT_PARAM_SLICE, 0, 0, 2000, 0)
+				Menu.Wsett.Wadv:addParam("Blank", "I prefer set to: 1450", SCRIPT_PARAM_INFO, "")
+				
 	Menu:addSubMenu("E settings", "Esett")
-		Menu.Esett:addParam("Erange", "E Range", SCRIPT_PARAM_SLICE, 0, 0, 1000, 0)
-		Menu.Esett:addParam("Edelay", "E Delay", SCRIPT_PARAM_SLICE, 0, 0, 1, 2)
-		Menu.Esett:addParam("Espeed", "E Speed", SCRIPT_PARAM_SLICE, 0, 0, 1500, 0)
-		Menu.Esett:addParam("Info", "I prefer to set: E Range = 700, E Delay = 0.10,", SCRIPT_PARAM_INFO, "")
-		Menu.Esett:addParam("Info", "E angle = 50, E Speed = 900", SCRIPT_PARAM_INFO, "")
+
+			Menu.Esett:addSubMenu("E Advanced Config", "Eadv")
+				Menu.Esett.Eadv:addParam("Erange", "E Range", SCRIPT_PARAM_SLICE, 0, 0, 1000, 0)
+				Menu.Esett.Eadv:addParam("Blank", "700", SCRIPT_PARAM_INFO, "")
+				Menu.Esett.Eadv:addParam("Blank", "", SCRIPT_PARAM_INFO, "")
+				Menu.Esett.Eadv:addParam("Edelay", "E Delay", SCRIPT_PARAM_SLICE, 0, 0, 1, 2)
+				Menu.Esett.Eadv:addParam("Blank", "0.10", SCRIPT_PARAM_INFO, "")
+				Menu.Esett.Eadv:addParam("Blank", "", SCRIPT_PARAM_INFO, "")
+				Menu.Esett.Eadv:addParam("Espeed", "E Speed", SCRIPT_PARAM_SLICE, 0, 0, 1500, 0)
+				Menu.Esett.Eadv:addParam("Blank", "900", SCRIPT_PARAM_INFO, "")
+				
+		Menu.Esett:addParam("Ecombo", "E in Combo", SCRIPT_PARAM_ONOFF, true)
+
+		
 	Menu:addSubMenu("R settings", "Rsett")
 		Menu.Rsett:addParam("Rcombo", "R in Combo", SCRIPT_PARAM_ONOFF, true)
+		Menu.Rsett:addParam("Rkill", "Cast R only when can kill", SCRIPT_PARAM_ONOFF, true)
 		
 end
 
@@ -208,7 +236,7 @@ end
 --]]
 
 function UseQ()
-if qrdy and GetDistance(Target) <= Qrange then
+if qrdy and Menu.Qsett.Qcombo  and GetDistance(Target) <= Qrange then
 	CastPosition,  HitChance,  Position = VP:GetLineCastPosition(Target, Qdelay, Qwidth, Qrange, Qspeed, myHero)
 		if HitChance >= 2 then
 			if VIP_USER then Packet("S_CAST", { spellId = _Q, toX = CastPosition.x, toY = CastPosition.z, fromX = CastPosition.x, fromY = CastPosition.z }):send() end
@@ -219,7 +247,7 @@ if qrdy and GetDistance(Target) <= Qrange then
 end
 
 function UseE()
-if erdy and GetDistance(Target) <= 700 then
+if erdy and Menu.Esett.Ecombo and GetDistance(Target) <= 700 then
 	CastPosition,  HitChance,  Position = VP:GetLineCastPosition(Target, Edelay, 50*math.pi/180, Erange, Espeed, myHero)
 		if HitChance >= 2 then
 			if VIP_USER then Packet("S_CAST", { spellId = _E, toX = CastPosition.x, toY = CastPosition.z, fromX = CastPosition.x, fromY = CastPosition.z }):send() end
@@ -230,7 +258,7 @@ if erdy and GetDistance(Target) <= 700 then
 end
 
 function UseW()
-if wrdy and GetDistance(Target) <= Wrange then
+if wrdy and Menu.Wsett.Wcombo  and GetDistance(Target) <= Wrange then
 	GrabObject()
 		end
 	if havetarget then
@@ -244,7 +272,7 @@ if wrdy and GetDistance(Target) <= Wrange then
 end
 
 function UseR()
-if rrdy and GetDistance(Target) <= 675 then
+if rrdy and Menu.Rsett.Rcombo and GetDistance(Target) <= 675 then
 			CastSpell(_R, Target)
 		end
 end
@@ -370,6 +398,33 @@ if Grabjungle then
 	end
 end
 end
+
+function Calc()
+	for i=1, EnemysInTable do
+		
+		local enemy = EnemyTable[i].hero
+		if not enemy.dead and enemy.visible then
+		DmgQ = getDmg("Q", enemy, myHero)
+		DmgW = getDmg("W", enemy, myHero)
+		DmgE = getDmg("E", enemy, myHero)
+		DmgR = getDmg("R", enemy, myHero) 
+		Total = 0
+
+		if rrdy then
+			Total = DmgR*(3+BallCount)
+			EnemyTable[i].r = 0
+		end
+	
+			EnemyTable[i].q = DmgQ
+
+			EnemyTable[i].w = DmgW
+
+			EnemyTable[i].e = DmgE
+	end
+	end
+	end
+
+
 --[[
 *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 			      Orbwalking
@@ -476,6 +531,7 @@ function OnDraw()
 		 DrawCircle2(myHero.x, myHero.y, myHero.z, 675, 0xFFFF00FF)
 		end
 
+		DrawText(T, 18, 100, 100, 0xFFFF0000)
 end
 
 -- Lag free circles (by barasia, vadash and viseversa)
